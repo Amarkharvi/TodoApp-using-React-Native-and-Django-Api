@@ -1,6 +1,6 @@
 
 import React, { Component, useState } from "react";
-import { Alert, Modal, StyleSheet, Text, Pressable, View } from "react-native";
+import { Alert, Modal, StyleSheet, Text, Pressable, View, ToastAndroid } from "react-native";
 import { TextInput} from "react-native-paper";
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 
@@ -28,12 +28,14 @@ constructor(props){
   async onFetchLoginRecords(){
     try {
         let response = await fetch('https://reactdjangobyamar.herokuapp.com/api/todos/?format=json',{
-        method:'POST',
+        method:'post',
+        mode:"no-cors",
         headers:{
+            'Accept':'application/json',
             'Content-Type':'application/json',
         },
         body:JSON.stringify({
-            id:"6",
+            
             title:this.state.title,
             description:this.state.desc,
             completed:this.state.completed
@@ -41,7 +43,11 @@ constructor(props){
         
     });
     if (response.status>=200 && response.status<300){
-        alert("posted successfully!!!");
+      ToastAndroid.show("Posted Succesfully!!",ToastAndroid.SHORT);
+        
+    }
+    else{
+      alert("Error posting,Check Connectivity or fill the form fully!!!");
     }
     
   }
@@ -52,13 +58,16 @@ constructor(props){
 }
 
 onPressSubmitButton(){
+  console.log('pressed');
     this.onFetchLoginRecords();
+    
 }
-  /*
- show=(title,desc,completed)=>{
-     console.log(title+'  '+desc+' '+completed);
- }*/
-  
+functionCombined (){
+  const {modalVisible}=this.state;
+  this.onPressSubmitButton();
+  this.setModalVisible(!modalVisible);
+}
+ 
 
   render() {
    
@@ -81,7 +90,7 @@ onPressSubmitButton(){
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Task Details</Text>
               <View style={styles.inputView}>
-                  <TextInput label="Title" placeholder="Enter the title" mode="outlined" style={styles.input} onChangeText={this.handleText} />
+                  <TextInput label="Title" placeholder="Enter the title" mode="outlined" style={styles.input} onChangeText={this.handleText}  />
                   <TextInput label="Description"  placeholder="Enter the Description" mode="outlined" style={styles.input} onChangeText={this.handleDesc} /></View>
                   <BouncyCheckbox 
                   size={35}
@@ -95,7 +104,7 @@ onPressSubmitButton(){
 
               <Pressable
                 style={[styles.closebutton, styles.buttonClose]}
-                onPress={() => this.setModalVisible(!modalVisible),()=>this.onPressSubmitButton.bind(this)}
+                onPress={()=>this.functionCombined()}
               >
                 <Text style={styles.textStyleclose}>Post</Text>
               </Pressable>

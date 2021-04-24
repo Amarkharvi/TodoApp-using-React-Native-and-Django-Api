@@ -20,7 +20,15 @@ export default App = () => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
+    fetch('https://reactdjangobyamar.herokuapp.com/api/todos/?format=json')
+    .then((response) => response.json())
+    .then((json) => setData(json))
+    
+    .catch((error) => console.error(error))
+    .finally(() => setLoading(false));
     wait(2000).then(() => setRefreshing(false));
+    ToastAndroid.show("Refereshed!",ToastAndroid.SHORT);
+
   }, []);
 
   
